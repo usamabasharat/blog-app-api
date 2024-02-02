@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, Response, status, HTTPException
+from typing import List
 from sqlalchemy.orm import Session
 from .database import engine, SessionLocal
 from . import models, schemas
@@ -25,13 +26,13 @@ def create(request: schemas.Blog, db: Session = Depends(get_db)):
   return new_blog
 
 
-@app.get('/blogs', status_code=status.HTTP_200_OK)
+@app.get('/blogs', status_code=status.HTTP_200_OK, response_model=List[schemas.showBlog])
 def show_all(db: Session = Depends(get_db)):
   blogs = db.query(models.Blog).order_by('id').all()
   return blogs
 
 
-@app.get('/blogs/{id}', status_code=status.HTTP_200_OK)
+@app.get('/blogs/{id}', status_code=status.HTTP_200_OK, response_model=schemas.showBlog)
 def show(id: int, db: Session = Depends(get_db)):
   blog = db.query(models.Blog).filter(models.Blog.id == id).first()
 
